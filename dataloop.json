@@ -2,7 +2,7 @@
   "displayName": "Active Learning Zvi",
   "name": "active-learning-zvi",
   "scope": "global",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "codebase": {
     "type": "git",
     "gitUrl": "https://github.com/zvi-dataloop/active-learning-zvi",
