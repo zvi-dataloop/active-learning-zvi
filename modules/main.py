@@ -37,7 +37,7 @@ class ServiceRunner(dl.BaseServiceRunner):
                 item.metadata['system']['tags'] = {}
             item.metadata['system']['tags'][action[0]] = True
             item = item.update(True)
-        return item
+        return [item, item]
 
     @staticmethod
     def train_model(model: dl.Model):

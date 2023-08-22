@@ -2,7 +2,7 @@
   "displayName": "Active Learning Zvi",
   "name": "active-learning-zvi",
   "scope": "global",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "codebase": {
     "type": "git",
     "gitUrl": "https://github.com/zvi-dataloop/active-learning-zvi",
@@ -68,9 +68,9 @@
         "panel": "dataSplit",
         "invoke": {
           "type": "function",
-          "namespace": "data-split.custom_nodes.data_split",
-          "scope": "global"
+          "namespace": "data-split.custom_nodes.data_split"
         },
+        "scope": "global",
         "categories": [
           "data"
         ]
@@ -79,9 +79,9 @@
         "panel": "newModel",
         "invoke": {
           "type": "function",
-          "namespace": "model-setup.create_new_model.new_model",
-          "scope": "project"
+          "namespace": "model-setup.create_new_model.new_model"
         },
+        "scope": "project",
         "categories": [
           "automation"
         ]
@@ -90,9 +90,9 @@
         "panel": "trainModel",
         "invoke": {
           "type": "function",
-          "namespace": "active-learning-nodes.custom_nodes.train_model",
-          "scope": "project"
+          "namespace": "active-learning-nodes.custom_nodes.train_model"
         },
+        "scope": "project",
         "categories": [
           "automation"
         ]
@@ -101,9 +101,9 @@
         "panel": "evaluateModel",
         "invoke": {
           "type": "function",
-          "namespace": "active-learning-nodes.custom_nodes.evaluate_model",
-          "scope": "global"
+          "namespace": "active-learning-nodes.custom_nodes.evaluate_model"
         },
+        "scope": "global",
         "categories": [
           "automation"
         ]
@@ -112,9 +112,9 @@
         "panel": "compareModels",
         "invoke": {
           "type": "function",
-          "namespace": "model-comparison.compare_models.compare_models",
-          "scope": "project"
+          "namespace": "model-comparison.compare_models.compare_models"
         },
+        "scope": "project",
         "categories": [
           "automation"
         ]
