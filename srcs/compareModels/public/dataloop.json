@@ -59,11 +59,7 @@
             ],
             "output": [
               {
-                "name": "model_1",
-                "type": "Model"
-              },
-              {
-                "name": "model_2",
+                "name": "winning_model",
                 "type": "Model"
               }
             ]

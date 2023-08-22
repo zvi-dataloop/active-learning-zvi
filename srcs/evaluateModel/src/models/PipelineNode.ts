@@ -34,7 +34,7 @@ export interface Port {
 }
 
 const DEFAULT_VALUES = (): INodeConfig => ({
-    name: 'Evaluate Node',
+    name: 'Evaluate Model',
     validation: {
         valid: true,
         errors: []
@@ -42,7 +42,7 @@ const DEFAULT_VALUES = (): INodeConfig => ({
 })
 
 const NODE_DEFAULT_VALUES = {
-    name: 'Evaluate Node',
+    name: 'Evaluate Model',
     id: '',
     // TODO: rectify these values from Or or YAYA
     inputs: [],

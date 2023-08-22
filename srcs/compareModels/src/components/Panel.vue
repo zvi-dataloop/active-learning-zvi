@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineProps, computed, toRef, onMounted } from 'vue'
+import { ref, defineProps, computed, toRef, onMounted, onUpdated} from 'vue'
 import {debounce } from 'lodash'
 import { watch } from 'vue-demi'
 import {
@@ -34,6 +34,14 @@ const editor = ref(null);
 const codebaseType = ref(CODEBASE_TYPES_OPTIONS[0])
 const openEditPanel = ref(false)
 
+
+onUpdated(() => {
+    window.dl.agent.sendEvent({
+        name: DlFrameEvent.SET_HEIGHT,
+        payload: document.body.scrollHeight
+    })
+})
+
 onMounted(() => {
     nodeFileInput.value = document.createElement('input');
     nodeFileInput.value.type = 'file';
@@ -49,10 +57,10 @@ onMounted(() => {
     nodeRequirementsFileInput.value.addEventListener('change', handleRequirementsUpload);
     document.body.appendChild(nodeRequirementsFileInput.value);
 
-    editor.value = ace.edit('editor', {mode: ace.require('ace/mode/python')});
-    editor.value.session.setMode('python')
-    editor.value.on('change', handleCodeChange)
-    setEditorTheme()
+    // editor.value = ace.edit('editor', {mode: ace.require('ace/mode/python')});
+    // editor.value.session.setMode('python')
+    // editor.value.on('change', handleCodeChange)
+    // setEditorTheme()
 });
 
 const nodeNameErrorMessage = computed(() => {
@@ -87,7 +95,6 @@ const validation = computed((): ValidationDescriptor => {
 })
 
 const setEditorTheme = () => {
-    debugger;
     if (theme.value === 'light') {
         editor.value.setTheme(ace.require('ace/theme/tomorrow'))
     } else {
@@ -211,7 +218,7 @@ watch(theme, () => {
             :disabled="readonly"
         />
 
-        <div class="margin-bottom">
+        <!-- <div class="margin-bottom">
             <dl-typography color="dl-color-medium" >Model Comparison Logic</dl-typography>
         </div>
 
@@ -281,7 +288,7 @@ watch(theme, () => {
             <dl-button size="s" dense style="margin-top: 8px" flat icon="icon-dl-upload" @click="openRequirementsFileUpload" >Upload Requirements.txt</dl-button>
             <div class="margin-top"><dl-typography  v-if="nodeRequirementsFileInput && nodeRequirementsFileInput.name"> {{nodeRequirementsFileInput.name}} </dl-typography></div>
 
-        </div>
+        </div> -->
 
     </div>
 </template>

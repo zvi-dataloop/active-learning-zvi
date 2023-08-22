@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineProps, computed, toRef } from 'vue'
+import { ref, defineProps, computed, toRef, onUpdated } from 'vue'
 import {debounce } from 'lodash'
 import { watch } from 'vue-demi'
 import {
@@ -23,7 +23,12 @@ const nodeNameErrorMessage = computed(() => {
         return 'Node name can only contain letters, numbers, underscores, hyphens and spaces'
     }
 })
-
+onUpdated(() => {
+    window.dl.agent.sendEvent({
+        name: DlFrameEvent.SET_HEIGHT,
+        payload: document.body.scrollHeight
+    })
+})
 const trimNodeName = () => {
     nodeName.value = nodeName.value.trim()
 }

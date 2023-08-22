@@ -1,7 +1,8 @@
 body {
   overflow-x: hidden;
   width: 95%;
-  margin-bottom: 20px
+  margin-bottom: 20px;
+  margin: 0 auto;
 }
 
 .full-screen {

@@ -113,10 +113,11 @@ const NODE_DEFAULT_VALUES = {
     displayName?: string
     color?: string
     actionIcon?: string
-    action?: string
+    actions?: string[]
     portPercentage?: number
     type: string
     defaultValue?: string | number | boolean | Dictionary | null
+    nodeId?: string
 }
 
  export class NodeDescriptor {
@@ -135,16 +136,14 @@ const NODE_DEFAULT_VALUES = {
         this.name = init?.name ?? NODE_DEFAULT_VALUES.name
         this.inputs = init?.inputs ?? NODE_DEFAULT_VALUES.inputs
         this.metadata = init?.metadata ?? NODE_DEFAULT_VALUES.metadata
-        this.outputs = this.metadata.customNodeConfig.groups.map(element => {
-            return {
-                portId: element.id,
-                action: element.name,
-                portPercentage: element.distribution,
+        this.outputs = [{
+                portId: init?.outputs[0]?.portId ?? v4(),
+                actions: this.metadata.customNodeConfig.groups.filter((dict) => dict.name.trim() !== '').map(element => { return element.name }) ?? [],
                 name: 'item',
                 nodeId: this.id,
                 type: 'Item'
             }
-        });
+        ]
         this.type = init?.type ?? NODE_DEFAULT_VALUES.type
         this.projectId = init?.projectId ?? NODE_DEFAULT_VALUES.projectId
         this.appId = init?.appId ?? NODE_DEFAULT_VALUES.appId

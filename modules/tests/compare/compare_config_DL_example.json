@@ -1,0 +1,23 @@
+{
+    "verbose": true,
+    "wins": "all", 0.7, "any"
+    "labels_filter": [],
+    "checks": [
+        {
+            "type": "plot",
+            "legend": "val",
+            "figure": "loss",
+            "x_index": -1,
+            "minimize": true,
+            "min_delta": 0.1
+        },
+        {
+            "type": "plot",
+            "legend": "val",
+            "figure": "accuracy",
+            "x": -1,
+            "maximize": true,
+            "min_delta": 0.1
+        }
+    ]
+}

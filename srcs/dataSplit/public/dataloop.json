@@ -1,86 +1,90 @@
 {
-    "displayName": "Data Split",
-    "name": "Data Split",
-    "icon": "icon-dl-qa-sampling",
-    "components": {
-        "panels": [
-            {
-                "name": "pipelineNodePanel",
-                "icon": "icon-dl-qa-sampling",
-                "supportedSlots": [
-                    {
-                        "type": "pipelineNodeConfig",
-                        "configuration": {}
-                    }
-                ],
-                "conditions": {
-                    "resources": []
-                }
-            }
+  "displayName": "Data Split",
+  "name": "Data Split",
+  "icon": "icon-dl-qa-sampling",
+  "components": {
+    "panels": [
+      {
+        "name": "pipelineNodePanel",
+        "icon": "icon-dl-qa-sampling",
+        "supportedSlots": [
+          {
+            "type": "pipelineNodeConfig",
+            "configuration": {}
+          }
         ],
-        "pipelineNodes": [
-            {
-                "invoke": {
-                    "type": "function",
-                    "namespace": "custom_nodes.split"
-                },
-                "categories": ["data"]
-            }
-        ],
-        "modules": [
-            {
-                "name": "custom_nodes",
-                "entryPoint": "modules/main.py",
-                "className": "DataSplit",
-                "initInputs": [],
-                "functions": [
-                    {
-                        "name": "split",
-                        "description": "Data splitting custom node",
-                        "input": [
-                            {
-                                "type": "Item",
-                                "name": "item"
-                            }
-                        ],
-                        "output": [
-                            {
-                                "type": "Item",
-                                "name": "item"
-                            }
-                        ],
-                        "displayIcon": "qa-sampling",
-                        "displayName": "Data Split"
-                    }
-                ]
-            }
-        ],
-        "services": [{
-            "name": "runner81",
-            "panelNames": [
-              "pipelineNodePanel"
+        "conditions": {
+          "resources": []
+        }
+      }
+    ],
+    "pipelineNodes": [
+      {
+        "invoke": {
+          "type": "function",
+          "namespace": "active-learning-nodes.custom_nodes.data_split"
+        },
+        "categories": [
+          "data"
+        ]
+      }
+    ],
+    "modules": [
+      {
+        "name": "custom_nodes",
+        "entryPoint": "modules/main.py",
+        "className": "ServiceRunner",
+        "initInputs": [],
+        "functions": [
+          {
+            "name": "split",
+            "description": "Data splitting custom node",
+            "input": [
+              {
+                "type": "Item",
+                "name": "item"
+              }
             ],
-            "moduleName": "custom_nodes",
-            "runtime": {
-                "podType": "regular-xs",
-                "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
-                "numReplicas": 1,
-                "concurrency": 10,
-                "pyPackages": {},
-                "singleAgent": false,
-                "autoscaler": {
-                  "type": "rabbitmq",
-                  "minReplicas": 1,
-                  "maxReplicas": 2,
-                  "queueLength": 10
-                },
-                "preemptible": false,
-                "executionTimeout": 3600,
-                "drainTime": 600,
-                "onReset": "failed",
-                "runExecutionAsProcess": false
-              },
-              "maxAttempts": 3
-          }]
-    }
+            "output": [
+              {
+                "type": "Item",
+                "name": "item"
+              }
+            ],
+            "displayIcon": "qa-sampling",
+            "displayName": "Data Split"
+          }
+        ]
+      }
+    ],
+    "services": [
+      {
+        "name": "runner81",
+        "panelNames": [
+          "pipelineNodePanel"
+        ],
+        "moduleName": "custom_nodes",
+        "runtime": {
+          "podType": "regular-xs",
+          "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
+          "numReplicas": 1,
+          "concurrency": 10,
+          "pyPackages": {},
+          "singleAgent": false,
+          "autoscaler": {
+            "type": "rabbitmq",
+            "minReplicas": 1,
+            "maxReplicas": 2,
+            "queueLength": 10
+          },
+          "preemptible": false,
+          "executionTimeout": 3600,
+          "drainTime": 600,
+          "onReset": "failed",
+          "runExecutionAsProcess": false
+        },
+        "maxAttempts": 3
+      }
+    ]
+  }
 }

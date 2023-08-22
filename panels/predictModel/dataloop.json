@@ -1,0 +1,101 @@
+{
+  "displayName": "Model Predict (new)",
+  "name": "Model Predict",
+  "icon": "icon-dl-node-predict",
+  "components": {
+    "panels": [
+      {
+        "name": "pipelineNodePanel",
+        "icon": "icon-dl-node-predict",
+        "supportedSlots": [
+          {
+            "type": "pipelineNodeConfig",
+            "configuration": {}
+          }
+        ],
+        "conditions": {
+          "resources": []
+        }
+      }
+    ],
+    "pipelineNodes": [
+      {
+        "invoke": {
+          "type": "function",
+          "namespace": "model-prediction.predict_model.predict_model"
+        },
+        "categories": [
+          "automation"
+        ]
+      }
+    ],
+    "modules": [
+      {
+        "name": "predict_model",
+        "versions": {
+          "dtlpy": "1.77.10"
+        },
+        "entryPoint": "modules/predict_model.py",
+        "className": "Evaluator",
+        "initInputs": [],
+        "functions": [
+          {
+            "name": "predict_model",
+            "description": "Evaluate a model with a ground truth dataset",
+            "input": [
+              {
+                "name": "item",
+                "type": "Item"
+              },
+              {
+                "name": "model",
+                "type": "Model"
+              }
+            ],
+            "output": [
+              {
+                "name": "item",
+                "type": "Item"
+              },
+              {
+                "name": "annotation",
+                "type": "Annotation"
+              }
+            ],
+            "displayIcon": "status-filled",
+            "displayName": "Model Predict"
+          }
+        ]
+      }
+    ],
+    "services": [
+      {
+        "name": "model-prediction",
+        "panelNames": [
+          "predictModel"
+        ],
+        "moduleName": "predict_model",
+        "runtime": {
+          "podType": "regular-xs",
+          "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
+          "numReplicas": 1,
+          "concurrency": 10,
+          "pyPackages": {},
+          "singleAgent": false,
+          "autoscaler": {
+            "type": "rabbitmq",
+            "minReplicas": 1,
+            "maxReplicas": 2,
+            "queueLength": 10
+          },
+          "preemptible": false,
+          "executionTimeout": 3600,
+          "drainTime": 600,
+          "onReset": "failed",
+          "runExecutionAsProcess": false
+        },
+        "maxAttempts": 3
+      }
+    ]
+  }
+}

@@ -1,185 +1,190 @@
 # Active Learning
 
-Active learning is a subset of supervised learning that involves selecting the most informative data points for the model to train on. In active learning pipelines, the model is initially trained on a small labeled dataset, and then it selects the most informative examples from an unlabeled pool for a human expert to label. The model is then retrained on the newly labeled data, and the process repeats until the model achieves a satisfactory level of performance.
+Active learning is a method in machine learning that selects more informative data points to label, prioritizing those
+that would provide the most valuable information. By selectively labeling only informative examples, active learning
+helps improve learning process efficiency to achieve high accuracy with fewer labeled samples.
 
 ![alt text](assets/active-learning-pipeline.png)
 
+---
 
-# Data Split Node
+## Quick Start
+
+* In order to continue, you need to install our &nbsp;🚀 &nbsp;[Python SDK](https://github.com/dataloop-ai/dtlpy) and use
+  our [CLI](https://sdk-docs.dataloop.ai/en/latest/cli.html).
+
+1. Clone the repository
+   ```
+   git clone https://github.com/dataloop-ai-apps/active-learning.git
+   ```
+
+2. The app can be installed via terminal or python.
+
+   In terminal, use the following commands:
+   ```bash
+   dlp app install --dpk-id <DPK ID> --project-name <PROJECT_NAME>
+   ```
+
+   In python, use the following commands:
+
+   ```python
+   dpk = dl.dpks.get(dpk_name='active-learning-1.3')
+   project.apps.install(dpk=dpk)
+   ```
+
+3. Go to “Pipelines” and “Create new pipeline”
+
+4. Select the “Active Learning” template
+5. Fill in the required inputs and outputs in each node
+6. Start pipeline
+
+To customize your pipeline, select the nodes from the
 
 ---
 
-<img height="40mm" src="https://mk0dataloop4fni44fjg.kinstacdn.com/wp-content/uploads/2020/03/logo.svg">  
+## Introduction
+
+Dataloop pipelines provides a user-friendly interface for building, managing, and monitoring end-to-end machine learning
+workflows. This Active Learning app installs custom nodes into Dataloop pipelines to allow users to implement active
+learning pipelines in production.
+
+Custom nodes installed include:
+
+- data splitting
+- create new models (for fine-tuning)
+- evaluate a model
+- compare two models
+
+Each node is explained in detail below.
+
 
 ---
+
+## Data Split Node
 
 <img src="assets/data_split.png">
 
----
-## Description
+### Description
 
-The Data Split application enables developers to split data into multiple groups. The data can be split equally or by a percentage.
+The **Data Split** node allows users to split data into groups, split equally or by percentage. This node takes a stream
+of data and automatically assigns them to a data group based on user-defined groups and distribution. For example, if
+you wanted a 80-20 split for model training, you would create two groups with the names and distributions of “train”
 
-## Setup
-* In order to continue, you need to install our &nbsp;🚀 &nbsp;[Python SDK](https://github.com/dataloop-ai/dtlpy) and use our [CLI](https://sdk-docs.dataloop.ai/en/latest/cli.html).
+### App Usage in the Dataloop Platform
 
-## Installation
-* Clone the repository -  `git clone https://github.com/dataloop-ai-apps/data-split.git`
-* Navigate to the repository - `cd data-split`
-* Publish the app -  `dlp app publish --project-name <PROJECT_NAME>`
-* Install - `dlp app install --dpk-id <DPK ID> --project-name <PROJECT_NAME>`
-Note: after installing the app, you can find it in the Dataloop Platform under the Apps tab.
-and you can find a new node in the pipeline editor under Data tag.
+To use the Data Split node in Pipelines, use the following steps:
 
-## Application Usage in the Dataloop Platform
-To use the Data Split in Pipeline, use the following steps:
 * Navigate to the Pipeline editor .
 * Drag and drop the Data Split node to the canvas.
-* setup your groups.
+* Name each group and define the distribution (equal or custom).
 * Connect the node to the next node.
 * Run the pipeline.
 
+---
 
-### State structure
+## Create New Model Node
 
-The following structure is saved upon the node's metadata.
+The **Create New Model** node takes an existing model and clones it with a defined dataset, training and validation
+subset, and model configurations. This node outputs a model that is prepared for training.
+The name of the new model entity is taken from the text box in the pipelines panel. If a model already exists with the
+same name, a number will be automatically added as a suffix.
 
-```typescript
-interface INodeConfigJSON {
-    name: string
-    distributeEqually: boolean
-    groups: Group[]
-    itemMetadata?: boolean
-    validation: ValidationDescriptor
-    ports?: Port[]
-}
-```
+**Parameters**
 
-### Fields
+- `base_model` - the model to clone (dl.Model)
+- `dataset` - the dataset to train on (dl.Dataset)
+- `train_subset` - the DQL query for the subset of training items (JSON)
+- `validation_subset` - the DQL query for the subset of validation items (JSON)
+- `model_configuration` - the model configurations to use for training (JSON)
 
-`name`: A string value representing the name of the node.
+**Outputs/returns**
 
-`distributeEqually`: A boolean value indicating whether or not the data should be distributed equally between the groups.
+- `new_model` - the new model entity created (dl.Model)
 
-`groups`: An array of objects representing the groups - each group has a name and a distribution percentage.
+---
 
-`itemMetadata`: A boolean that when set to true it add the action to the item metadata
+## Evaluate Model Node
 
-`validation`: An object representing the validation information for the node.
+The **Evaluate Model** node creates predictions for a test dataset from the newly trained model and compares it against
+the ground truth annotations.
 
-`ports`: An array of objects representing the ports of the node.
+To evaluate a model, a test subset with ground truth annotations will be compared to the predictions made by the newly
+trained model. Only models that have been trained or deployed can be compared.
 
-### Example
+The model will make predictions on the test items, and scores will be created based on the annotation types. Currently
+supported types for scoring include classification, bounding box, polygon, segmentation, and point annotations.
 
-Here are examples of what could be saved in the node's metadata under the `customNodeConfig` property, using the `updateNodeConfig` event.
+By default, the annotation type(s) to be compared are defined by the model output type `model.output_type`. Scores
+include a label agreement score, an attribute agreement score, and a geometry score (e.g. IOU).   
 
-```json
-{
-    "name": "Data",
-    "distributeEqually": true,
-    "groups": [
-        {
-            "id": "81fd5094-14ae-45a6-b301-dfc041085e3c",
-            "name": "Group_1",
-            "distribution": 33.33
-        },
-        {
-            "id": "c609c463-4436-4354-90b1-e4d957b668da",
-            "name": "Group_2",
-            "distribution": 33.33
-        },
-        {
-            "id": "e0308338-d309-4848-ae62-09790f638c01",
-            "name": "Group_3",
-            "distribution": 33.34
-        }
-    ],
-    "itemMetadata": false,
-    "validation": {
-        "valid": true,
-        "errors": []
-    },
-    "ports": [
-        {
-            "action": "Group_1",
-            "name": "item",
-            "type": "Item",
-            "portPercentage": 33.33
-        },
-        {
-            "action": "Group_2",
-            "name": "item",
-            "type": "Item",
-            "portPercentage": 33.33
-        },
-        {
-            "action": "Group_3",
-            "name": "item",
-            "type": "Item",
-            "portPercentage": 33.34
-        }
-    ]
-}
-```
+Scores will be uploaded to the platform and available for other use (e.g. comparing models).
 
-```json
-{
-    "name": "",
-    "distributeEqually": true,
-    "groups": [
-        {
-            "id": "81fd5094-14ae-45a6-b301-dfc041085e3c",
-            "name": "Group_1",
-            "distribution": 33.33
-        },
-        {
-            "id": "c609c463-4436-4354-90b1-e4d957b668da",
-            "name": "Group_2",
-            "distribution": 33.33
-        },
-        {
-            "id": "e4a93d13-de62-4bdd-9cd2-f36cc9029f5b",
-            "name": "Group_3",
-            "distribution": 33.34
-        }
-    ],
-    "itemMetadata": false,
-    "validation": {
-        "valid": false,
-        "errors": [
-            {
-                "message": "Node name error",
-                "suggestion": "Please adjust the node name"
-            },
-            {
-                "message": "Metadata key error",
-                "suggestion": "Please adjust the metadata key"
-            }
-        ]
-    },
-    "ports": [
-        {
-            "action": "Group_1",
-            "name": "item",
-            "type": "Item",
-            "portPercentage": 33.33
-        },
-        {
-            "action": "Group_2",
-            "name": "item",
-            "type": "Item",
-            "portPercentage": 33.33
-        },
-        {
-            "action": "Group_3",
-            "name": "item",
-            "type": "Item",
-            "portPercentage": 33.34
-        }
-    ]
-}
-```
+**Parameters**
 
-## Contributions, Bugs and Issues - How to Contribute  
+- `model` - the model entity for evaluation (dl.Model)
+- `test_dataset` - the dataset entity for evaluation (dl.Dataset)
+- `test_subset` - the DQL query for the subset of test items (JSON)
+
+**Outputs/returns**
+
+- `model` - the model entity used for evaluation (dl.Model)
+- `test_dataset` - the dataset entity used for evaluation (dl.Dataset)
+
+---
+
+## Compare Model Node
+
+The **Compare Models** node compares two models: a previously trained model, and the newly trained model. 
+Comparisons are highly customizable and can also be done via the Dataloop SDK model adapters.
+
+The default Dataloop compare model node can compare any two models that have either:
+
+1) uploaded metrics to model management during model training, or
+2) been evaluated on a common test subset.
+
+To do the comparison, a `compare_config` JSON must be provided. The following keys are supported (with the indicated
+defaults):
+
+- `"wins"` - the metric to compare (string or float), i.e. `"any"`, `"all"`, or `"0.7"` to indicate 70% of the
+  individual sub-comparisons need to result in a win in order for the overall comparison to be a win
+- `"checks"` - a list of sub-comparisons to perform (list of dictionaries)
+- `"verbose"` - whether to print the results of each sub-comparison (boolean), i.e. `true` or `false`
+
+`"checks"` is where the user can list the specific metrics to be compared. The format of each check will depend on the
+metric type.
+
+
+If comparing model training metrics as described in **1)** above, the following subkeys are supported:
+
+- `"type"` : the type of metric to compare (string), e.g. `"plot"`
+- `"legend"` : the type of metric, e.g. `"loss"`
+- `"figure"` : the title of the figure to compare, e.g. `"training loss"`
+- `"x-index"` : the x-axis index of the metric to compare, e.g. `-1` for the final epoch, if `x` is epoch
+- `"maximize"` : whether to maximize the metric (boolean), e.g. `false` for loss
+- `"min_delta"` : the minimum delta to consider a comparison win (float), e.g. `0.1`
+
+
+If comparing model predictions as described in **2)** above, the following subkeys are supported:
+
+- `"wins"` - the metric to compare (string or float), i.e. `"any"`, `"all"`, or `"0.7"` to indicate 70% of the
+  individual sub-comparisons need to result in a win in order for the overall comparison to be a win
+
+
+**Parameters**
+
+- `previous_model` - the previously trained model (dl.Model)
+- `new_model` - the newly trained model to compare with the previous (dl.Model)
+- `compare_config` - the configurations for the comparison (JSON)
+
+
+**Outputs/returns**
+
+- `winning_model` - the model that wins the comparison, with two "action" fields: `update_model` and `discard` (
+  dl.Model)
+
+---
+
+## Contributions, Bugs and Issues - How to Contribute
+
 We welcome anyone to help us improve this app.  
 [Here's](CONTRIBUTING.md) a detailed instructions to help you open a bug or ask for a feature request

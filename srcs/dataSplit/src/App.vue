@@ -8,7 +8,9 @@ import { NodeConfig, NodeDescriptor } from './models/PipelineNode'
 
 const component = ref<NodeDescriptor>(null)
 const theme = ref('light')
-const readonly = ref('edit')
+const readonly = ref(false)
+const addItemMetadata = ref(false)
+
 
 onMounted(() => {
     try {
@@ -18,7 +20,7 @@ onMounted(() => {
             try {
                 const settings = await dl.settings.get() as any
                 theme.value = settings.theme
-                readonly.value = settings.readonly
+                readonly.value = settings.readonly === 'view'
             } catch (e) {
                 throw new Error('Error getting settings', e)
             }
@@ -27,8 +29,8 @@ onMounted(() => {
                 theme.value = mode
             })
 
-            dl.on('setReadonly', (readonlyValue: string) => {
-                readonly.value = readonlyValue
+            dl.on('pipelineReadonly', ({mode}: {mode: string}) => {
+                readonly.value = mode === 'view'
             })
 
             dl.on(DlEvent.NODE_CONFIG, async (eventPayload: NodeDescriptor) => {
@@ -37,6 +39,7 @@ onMounted(() => {
                         eventPayload.metadata.customNodeConfig = NodeConfig.DefaultValues
                     }
                     component.value = new NodeDescriptor(NodeDescriptor.fromJSON(eventPayload))
+                    addItemMetadata.value = component.value?.metadata?.customNodeConfig?.itemMetadata ?? false
                     console.info('Node Config Event', eventPayload)
                     await window.dl.agent.sendEvent({
                         name: DlFrameEvent.UPDATE_NODE_CONFIG,
@@ -59,7 +62,10 @@ onMounted(() => {
 <template>
     <dl-theme-provider :is-dark="theme === 'dark'">
         <div class="full-screen">
-            <Panel :component="component" :readonly="readonly === 'view'"/>
+            <Panel :component="component"
+            :readonly="readonly"
+            :addItemMetadata="addItemMetadata"
+            @add-item-metadata="addItemMetadata = $event"/>
         </div>
     </dl-theme-provider>
 </template>

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, defineProps, computed, toRef, nextTick } from 'vue'
+import { ref, defineProps, computed, toRef, nextTick, onUpdated } from 'vue'
 import { cloneDeep, debounce, sumBy } from 'lodash'
 import { watch } from 'vue-demi'
 import {
     NodeConfig,
-    ModelName,
     ValidationDescriptor,
     NodeDescriptor
 } from '../models/PipelineNode'
@@ -17,6 +16,12 @@ const component = toRef(props, 'component')
 const nodeName = ref(NodeConfig.DefaultValues.name)
 const modelName = ref(NodeConfig.DefaultValues.modelName)
 
+onUpdated(() => {
+    window.dl.agent.sendEvent({
+        name: DlFrameEvent.SET_HEIGHT,
+        payload: document.body.scrollHeight
+    })
+})
 
 const nodeNameErrorMessage = computed(() => {
     if (!nodeName.value.length) {
@@ -27,17 +32,29 @@ const nodeNameErrorMessage = computed(() => {
     }
 })
 
+const newModelNameErrorMessage = computed(() => {
+    if (!modelName.value.length) {
+        return 'New model name is required'
+    }
+})
+
 const trimNodeName = () => {
     nodeName.value = nodeName.value.trim()
 }
 
 const errors = computed((): { message: string; suggestion: string }[] => {
     const e = []
-    
+
     if (!!nodeNameErrorMessage.value) {
         e.push({
             message: 'Node name error',
             suggestion: 'Please adjust the node name'
+        })
+    }
+    if (newModelNameErrorMessage.value) {
+        e.push({
+            message: 'new model name error',
+            suggestion: 'Please adjust the new model name'
         })
     }
     return e
@@ -54,7 +71,7 @@ const validation = computed((): ValidationDescriptor => {
 const debouncedUpdate = debounce(async () => {
     const nodeConfig = new NodeConfig({
         name: nodeName.value.trim(),
-        modelName: {name: modelName.value.name.trim()},
+        modelName: modelName.value.trim(),
         modelParameters: {},
         validation: validation.value,
     })
@@ -88,6 +105,7 @@ watch(
 watch(component, () => {
     const nodeConfig = component.value?.metadata.customNodeConfig
     nodeName.value = nodeConfig.name
+    modelName.value = nodeConfig.modelName
 })
 </script>
 
@@ -104,15 +122,16 @@ watch(component, () => {
             required
             @blur="trimNodeName"
             :disabled="readonly"
-        />      
+        />
         <dl-text-input
             without-root-padding
             style="width: 100%; padding-bottom: 20px"
-            placeholder="Model Version Name"
-            :error="!!nodeNameErrorMessage"
-            :error-message="nodeNameErrorMessage"
-            v-model="modelName.name"
-            title="Insert New Model Name"
+            placeholder="Insert a model name"
+            :error="!!newModelNameErrorMessage"
+            :error-message="newModelNameErrorMessage"
+            v-model="modelName"
+            title="New Model Name"
+            tooltip="The model name should be formatted as a Python string. To prevent duplication of model names, include dynamic variables within curly braces."
             required
             @blur="trimNodeName"
             :disabled="readonly"

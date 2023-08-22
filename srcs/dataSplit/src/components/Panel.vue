@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref, defineProps, computed, toRef, nextTick } from 'vue'
 import { v4 } from 'uuid'
 import { cloneDeep, debounce, sumBy } from 'lodash'
-import { watch } from 'vue-demi'
+import { watch, ref, defineProps, computed, toRef, onUpdated  } from 'vue-demi'
 import {
     Group,
     NodeConfig,
@@ -12,9 +11,11 @@ import {
 import { toFloat } from '../models/utils'
 import { DlFrameEvent } from '@dataloop-ai/jssdk'
 
-const props = defineProps<{ component: NodeDescriptor; readonly: boolean }>()
-const readonly = toRef(props, 'readonly')
+const props = defineProps<{ component: NodeDescriptor; readonly: boolean; addItemMetadata: boolean}>()
+const emit = defineEmits(['addItemMetadata'])
+
 const component = toRef(props, 'component')
+const readonly = toRef(props, 'readonly')
 const MAX_GROUP_NUMBER = 5
 const MIN_GROUP_NUMBER = 2
 const MAX_DISTRIBUTION = 100
@@ -23,7 +24,14 @@ const nodeName = ref(NodeConfig.DefaultValues.name)
 const distributeEqually = ref(NodeConfig.DefaultValues.distributeEqually)
 const metadataKeySpecialCharError = ref(false)
 const groups = ref<Group[]>(NodeConfig.DefaultValues.groups)
-const addItemMetadata = ref(false)
+const addItemMetadata = computed({
+    get: () => {
+        return props.addItemMetadata
+    },
+    set: (val) => {
+        emit('addItemMetadata', val)
+    }
+})
 
 /** Whether adding groups is allowed */
 const canAddGroup = computed(() => {
@@ -33,6 +41,13 @@ const canAddGroup = computed(() => {
 /** Whether deleting groups is allowed */
 const canDelete = computed(() => {
     return groups.value.length > MIN_GROUP_NUMBER
+})
+
+onUpdated(() => {
+    window.dl.agent.sendEvent({
+        name: "app:setHeight",
+        payload: document.body.scrollHeight
+    })
 })
 
 const changeDistribution = () => {
@@ -193,16 +208,14 @@ const debouncedUpdate = debounce(async () => {
     })
     try {
         component.value.metadata.customNodeConfig = nodeConfig
-        component.value.outputs = nodeConfig.groups.map((element) => {
-            return {
-                portId: element.id,
-                action: element.name,
-                portPercentage: element.distribution,
+        component.value.outputs = 
+            [{
+                portId: component.value.outputs[0].portId ?? v4(),
+                actions: nodeConfig.groups.filter((dict) => dict.name.trim() !== '').map(element => { return element.name }) ?? [],
                 name: 'item',
                 nodeId: component.value.id,
                 type: 'Item'
-            }
-        })
+            }]
         await window.dl.agent.sendEvent({
             name: DlFrameEvent.UPDATE_NODE_CONFIG,
             payload: component.value
@@ -230,8 +243,8 @@ watch(component, () => {
 
 <template>
     <div id="panel">
-        <dl-text-input
-            without-root-padding
+        <dl-input
+            dense
             style="width: 100%; padding-bottom: 20px"
             placeholder="Insert node name"
             :error="!!nodeNameErrorMessage"
@@ -275,13 +288,13 @@ watch(component, () => {
                     style="margin-bottom: 10px; align-items: start"
                 >
                     <dl-item-section class="item">
-                        <dl-text-input
+                        <dl-input
                             disable-clear-btn
                             v-model="group.name"
                             placeholder="Insert group name"
                             :error="group.name.length === 0"
                             error-message="Group name is required"
-                            without-root-padding
+                            dense
                             :disabled="readonly"
                             @input="validateGroupName($event, index)"
                             @change="validateGroupName($event, index)"
@@ -291,7 +304,7 @@ watch(component, () => {
                         class="item-2"
                         style="display: flex; align-items: center; gap: 10px"
                     >
-                        <dl-text-input
+                        <dl-input
                             style="width: 100%"
                             disable-clear-btn
                             type="number"
@@ -300,10 +313,10 @@ watch(component, () => {
                             :disabled="distributeEqually"
                             v-model.number="group.distribution"
                             @blur="validateDistribution(index)"
-                            without-root-padding
+                            dense
                         >
                             <template #append> % </template>
-                        </dl-text-input>
+                        </dl-input>
                         <dl-button
                             size="s"
                             flat
@@ -338,8 +351,6 @@ watch(component, () => {
                     </dl-item-section>
                     <dl-item-section
                         style="
-                            display: flex;
-                            align-items: center;
                             gap: 5px;
                             text-align: right;
                         "
@@ -376,7 +387,7 @@ watch(component, () => {
         <div id="item-metadata-section">
             <dl-typography size="12px" color="dl-color-darker">
                 Item Tags
-                <dl-icon icon="icon-dl-info" size="16px" />
+                <dl-icon icon="icon-dl-info" size="13px" />
                 <dl-tooltip>
                     Add a tag to each item based on its assigned group during
                     runtime. The tag will be added to the tag list of the item,

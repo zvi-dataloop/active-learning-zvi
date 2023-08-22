@@ -1,8 +1,8 @@
 {
   "displayName": "Active Learning Zvi",
   "name": "active-learning-zvi",
-  "scope": "global",
-  "version": "1.0.7",
+  "scope": "project",
+  "version": "1.3.137",
   "codebase": {
     "type": "git",
     "gitUrl": "https://github.com/zvi-dataloop/active-learning-zvi",
@@ -68,7 +68,7 @@
         "panel": "dataSplit",
         "invoke": {
           "type": "function",
-          "namespace": "data-split.custom_nodes.data_split"
+          "namespace": "active-learning-nodes.custom_nodes.data_split"
         },
         "scope": "global",
         "categories": [
@@ -83,29 +83,18 @@
         },
         "scope": "project",
         "categories": [
-          "automation"
-        ]
-      },
-      {
-        "panel": "trainModel",
-        "invoke": {
-          "type": "function",
-          "namespace": "active-learning-nodes.custom_nodes.train_model"
-        },
-        "scope": "project",
-        "categories": [
-          "automation"
+          "models"
         ]
       },
       {
         "panel": "evaluateModel",
         "invoke": {
           "type": "function",
-          "namespace": "active-learning-nodes.custom_nodes.evaluate_model"
+          "namespace": "model-evaluation.evaluate_model.evaluate_model"
         },
         "scope": "global",
         "categories": [
-          "automation"
+          "models"
         ]
       },
       {
@@ -116,7 +105,7 @@
         },
         "scope": "project",
         "categories": [
-          "automation"
+          "models"
         ]
       }
     ],
@@ -124,7 +113,7 @@
       {
         "name": "custom_nodes",
         "versions": {
-          "dtlpy": "1.77.10"
+          "dtlpy": "1.78.17"
         },
         "entryPoint": "modules/main.py",
         "className": "ServiceRunner",
@@ -132,7 +121,7 @@
         "functions": [
           {
             "name": "data_split",
-            "description": "The Data Split node is a powerful data processing tool that allows you to dynamically split your data into multiple groups at runtime. Whether you need to sample items for QA tasks or divide your ground truth into train/test/validation sets, the Data Split node makes it easy.\n \n Simply define your groups, set their distribution, and tag each item with its assigned group using a metadata field. Use the Data Split node at any point in your pipeline to customize your data processing.",
+            "description": "The 'Data Split' node is a powerful data processing tool that allows you to dynamically split your data into multiple groups at runtime. Whether you need to sample items for QA tasks or divide your ground truth into train/test/validation sets, the Data Split node makes it easy.\n \n Simply define your groups, set their distribution, and tag each item with its assigned group using a metadata field. Use the Data Split node at any point in your pipeline to customize your data processing.",
             "input": [
               {
                 "type": "Item",
@@ -147,68 +136,24 @@
             ],
             "displayIcon": "qa-sampling",
             "displayName": "Data Split"
-          },
-          {
-            "name": "train_model",
-            "description": "Temporary train model node, for checking the flow",
-            "input": [
-              {
-                "type": "Model",
-                "name": "model"
-              }
-            ],
-            "output": [
-              {
-                "type": "Model",
-                "name": "model"
-              }
-            ],
-            "displayIcon": "node-train",
-            "displayName": "Train model (empty)"
-          },
-          {
-            "name": "evaluate_model",
-            "description": "Evaluate model on test data and create the model metrics",
-            "input": [
-              {
-                "type": "Model",
-                "name": "model"
-              },
-              {
-                "type": "Dataset",
-                "name": "test_dataset"
-              },
-              {
-                "type": "Json",
-                "name": "test_filter"
-              }
-            ],
-            "output": [
-              {
-                "type": "Model",
-                "name": "model"
-              }
-            ],
-            "displayIcon": "status-filled",
-            "displayName": "Evaluate Model"
           }
         ]
       },
       {
         "name": "create_new_model",
         "versions": {
-          "dtlpy": "1.77.10"
+          "dtlpy": "1.78.17"
         },
         "entryPoint": "modules/new_model.py",
-        "className": "ModelCreator",
+        "className": "model_creator",
         "initInputs": [],
         "functions": [
           {
             "name": "new_model",
-            "description": "Create a new version of the model. Models can be created from pretrained models, or from a custom model. The model will be created in the same project as the input model.",
+            "description": "The Create New Model node generates a new model version by cloning an existing model, making it ready for fine-tuning.\n\n The node requires the following inputs: Base model to clone (train/deployed models only), model configurations for training (JSON), Dataset and its subsets (DQL filters): Train and validation.  The node inputs can be provided using parameters (fixed values or dynamic variables) or through node connections.\n\nUpon execution, the node will generate the new model as output. For more information, see Dataloop's Active Learning documentation.",
             "input": [
               {
-                "name": "from_model",
+                "name": "base_model",
                 "type": "Model"
               },
               {
@@ -217,11 +162,11 @@
               },
               {
                 "name": "train_subset",
-                "type": "String"
+                "type": "Json"
               },
               {
                 "name": "validation_subset",
-                "type": "String"
+                "type": "Json"
               },
               {
                 "name": "model_configuration",
@@ -230,7 +175,7 @@
             ],
             "output": [
               {
-                "name": "to_model",
+                "name": "new_model",
                 "type": "Model"
               }
             ],
@@ -240,85 +185,100 @@
         ]
       },
       {
-        "name": "compare_models",
+        "name": "evaluate_model",
         "versions": {
-          "dtlpy": "1.77.10"
+          "dtlpy": "1.78.17"
         },
-        "entryPoint": "modules/model_compare.py",
-        "className": "Comparator",
+        "entryPoint": "modules/model_evaluation.py",
+        "className": "evaluator",
         "initInputs": [],
         "functions": [
           {
-            "name": "compare_models",
-            "displayName": "Compare Models",
-            "description": "Compare two models according to input config",
+            "name": "evaluate_model",
+            "description": "The 'Evaluate Model' node creates predictions for a given Test set (Dataset and DQL filter) and compares them against the model's ground truth annotations. Scores are generated based on the annotation types and are subsequently uploaded to the platform for further use, such as in model comparison.\n\nBy default, the annotation type(s) considered in the evaluation process are defined by the model output type, 'model.output_type'.\nThe following annotations types are supported: classification, bounding box, polygon, segmentation, and point.\nScores encompass label agreement score, attribute agreement score, and geometry score (e.g. IOU).\nThe node requires the following inputs: Model (train/deployed), Dataset and Test subset (DQL filter).\n\nFor more information, see Dataloop's Active Learning documentation.",
             "input": [
               {
-                "name": "model_1",
+                "name": "model",
                 "type": "Model"
               },
               {
-                "name": "model_2",
-                "type": "Model"
+                "name": "test_dataset",
+                "type": "Dataset"
               },
               {
-                "name": "comparison_subset",
+                "name": "test_filter",
                 "type": "Json"
               }
             ],
             "output": [
               {
-                "name": "model_1",
+                "name": "model",
                 "type": "Model"
               },
               {
-                "name": "model_2",
-                "type": "Model"
+                "name": "test_dataset",
+                "type": "Dataset"
               }
-            ]
+            ],
+            "displayIcon": "status-filled",
+            "displayName": "Evaluate Model"
+          }
+        ]
+      },
+      {
+        "name": "compare_models",
+        "versions": {
+          "dtlpy": "1.78.17"
+        },
+        "entryPoint": "modules/model_compare.py",
+        "className": "comparator",
+        "initInputs": [],
+        "functions": [
+          {
+            "name": "compare_models",
+            "description": "The 'Compare Models' node undertakes a comparison between two trained model versions.\n\nThe default Dataloop compare model node can compare any two models that have either:\n- uploaded metrics to model management during model training, or\n- been evaluated on a common test subset.\n\nThe node requires the following inputs: 'compare_config' (JSON), 'Previous model' and 'New model'. The new model undergoes testing, and if it proves superior (based on the 'compare_config'), it will be sent as an output labelled 'Update model', signifying deployment readiness. Alternatively, it will be labelled 'Discard'. To do the comparison, a compare_config JSON must be provided. For more information, see Dataloop's Active Learning documentation.",
+            "input": [
+              {
+                "name": "previous_model",
+                "type": "Model"
+              },
+              {
+                "name": "new_model",
+                "type": "Model"
+              },
+              {
+                "name": "compare_config",
+                "type": "Json"
+              },
+              {
+                "name": "dataset",
+                "type": "Dataset"
+              }
+
+            ],
+            "output": [
+              {
+                "name": "winning_model",
+                "type": "Model",
+                "actions": [
+                  "update model",
+                  "discard"
+                ]
+              }
+            ],
+            "displayIcon": "compare",
+            "displayName": "Compare Models"
           }
         ]
       }
     ],
     "services": [
       {
-        "name": "data-split",
-        "moduleName": "custom_nodes",
-        "botUserName": "pipelines@dataloop.ai",
-        "versions": {
-          "dtlpy": "1.83.5"
-        },
-        "runtime": {
-          "podType": "regular-xs",
-          "numReplicas": 1,
-          "concurrency": 10,
-          "pyPackages": {},
-          "singleAgent": false,
-          "autoscaler": {
-            "type": "rabbitmq",
-            "minReplicas": 1,
-            "maxReplicas": 2,
-            "queueLength": 10
-          },
-          "preemptible": false,
-          "executionTimeout": 3600,
-          "drainTime": 600,
-          "onReset": "failed",
-          "runExecutionAsProcess": false
-        },
-        "maxAttempts": 3
-      },
-      {
-        "botUserName": "pipelines@dataloop.ai",
         "name": "active-learning-nodes",
         "panelNames": [
-          "dataSplit",
-          "evaluateModel"
+          "dataSplit"
         ],
         "moduleName": "custom_nodes",
-        "versions": {
-          "dtlpy": "1.83.5"
-        },
         "runtime": {
           "podType": "regular-xs",
           "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
@@ -333,7 +293,7 @@
             "queueLength": 10
           },
           "preemptible": false,
-          "executionTimeout": 3600,
+          "executionTimeout": 172800,
           "drainTime": 600,
           "onReset": "failed",
           "runExecutionAsProcess": false
@@ -341,15 +301,11 @@
         "maxAttempts": 3
       },
       {
-        "botUserName": "pipelines@dataloop.ai",
         "name": "model-setup",
         "panelNames": [
           "newModel"
         ],
         "moduleName": "create_new_model",
-        "versions": {
-          "dtlpy": "1.83.5"
-        },
         "runtime": {
           "podType": "regular-xs",
           "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
@@ -364,7 +320,7 @@
             "queueLength": 10
           },
           "preemptible": false,
-          "executionTimeout": 3600,
+          "executionTimeout": 172800,
           "drainTime": 600,
           "onReset": "failed",
           "runExecutionAsProcess": false
@@ -372,15 +328,38 @@
         "maxAttempts": 3
       },
       {
-        "botUserName": "pipelines@dataloop.ai",
+        "name": "model-evaluation",
+        "panelNames": [
+          "evaluateModel"
+        ],
+        "moduleName": "evaluate_model",
+        "runtime": {
+          "podType": "highmem-l",
+          "runnerImage": "ultralytics/ultralytics:latest",
+          "numReplicas": 1,
+          "concurrency": 10,
+          "pyPackages": {},
+          "singleAgent": false,
+          "autoscaler": {
+            "type": "rabbitmq",
+            "minReplicas": 1,
+            "maxReplicas": 2,
+            "queueLength": 10
+          },
+          "preemptible": false,
+          "executionTimeout": 172800,
+          "drainTime": 600,
+          "onReset": "failed",
+          "runExecutionAsProcess": false
+        },
+        "maxAttempts": 3
+      },
+      {
         "name": "model-comparison",
         "panelNames": [
           "compareModels"
         ],
         "moduleName": "compare_models",
-        "versions": {
-          "dtlpy": "1.83.5"
-        },
         "runtime": {
           "podType": "regular-xs",
           "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
@@ -395,7 +374,7 @@
             "queueLength": 10
           },
           "preemptible": false,
-          "executionTimeout": 3600,
+          "executionTimeout": 172800,
           "drainTime": 600,
           "onReset": "failed",
           "runExecutionAsProcess": false

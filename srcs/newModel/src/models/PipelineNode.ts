@@ -5,9 +5,9 @@ export interface Port {
     type: string
 }
 
-export interface ModelName {
-    name: string
-}
+// export interface ModelName {
+//     name: string
+// }
 
 export interface DataQuery {
     value: Object
@@ -15,7 +15,8 @@ export interface DataQuery {
 
 export interface INodeConfig {
     name: string
-    modelName: ModelName,
+    // modelName: ModelName,
+    modelName: string,
     dataQuery?: DataQuery,
     validation: ValidationDescriptor
     ports?: Port[],
@@ -28,7 +29,7 @@ export interface INodeConfig {
  * @typedef {Object} INodeConfigJSON
  * @property {string} name - The name of the node configuration.
  * @property {Object} body - The body of the node configuration.
- * @property {ModelName} body.modelName - An array of groups associated with the node configuration.
+ * @property {string} body.modelName - An array of groups associated with the node configuration.
  * @property {DataQuery} [body.dataQuery] - The metadata associated with the node configuration.
  * @property {ValidationDescriptor} validation - The validation descriptor for the node configuration.
  * @property {Port[]} [ports] - An array of ports associated with the node configuration.
@@ -45,8 +46,9 @@ export interface INodeConfigJSON {
 
 
 const DEFAULT_VALUES = (): INodeConfig => ({
-    name: 'New Model Version',
-    modelName: {name: "{model.name}-{datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}"},
+    name: 'Create New Model',
+    // modelName: { name: "{model.name}-{datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}" },
+    modelName: "{model.name}-{datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}",
     modelParameters: {},
     dataQuery: {value: {query: "SELECT * FROM {model.name}"}},
     validation: {
@@ -56,7 +58,7 @@ const DEFAULT_VALUES = (): INodeConfig => ({
 })
 
 const NODE_DEFAULT_VALUES = {
-    name: 'New Model',
+    name: 'Create New Model',
     id: '',
     inputs: [],
     outputs: [],
@@ -148,7 +150,8 @@ export class NodeDescriptor {
 
 export class NodeConfig implements INodeConfig {
     public name: string
-    public modelName: ModelName
+    // public modelName: ModelName
+    public modelName: string
     public validation: ValidationDescriptor
     public modelParameters: Object
 
@@ -183,6 +186,7 @@ export class NodeConfig implements INodeConfig {
     public toJSON() {
         return {
             name: this.name,
+            modelName: this?.modelName,
             validation: this.validation,
             ports: this.ports,
             modelParameters: this.modelParameters

@@ -11,7 +11,7 @@
   "dependencies": {
     "@dataloop-ai/components": "^0.16.36",
     "@dataloop-ai/icons": "^3.0.10",
-    "@dataloop-ai/jssdk": "^0.0.30",
+    "@dataloop-ai/jssdk": "^0.0.44",
     "lodash": "^4.17.21",
     "unplugin-vue-components": "^0.22.7",
     "uuid": "^9.0.0",

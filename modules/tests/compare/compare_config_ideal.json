@@ -1,0 +1,23 @@
+{
+    "verbose": true,
+    "wins": "any",
+    "checks": [
+        {
+            "type": "plot",
+            "legend": "metrics",
+            "figure": "mAP50(B)",
+            "x_index": -1,
+            "x_wins": "any",
+            "maximize": true,
+            "min_delta": 0.1
+        },
+        {
+            "type": "plot",
+            "legend": "val",
+            "figure": "box_loss",
+            "x_index": -1,
+            "maximize": false,
+            "min_delta": 0.1
+        }
+    ]
+}

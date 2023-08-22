@@ -63,7 +63,7 @@ export interface Port {
 }
 
 const DEFAULT_VALUES = (): INodeConfig => ({
-    name: 'Compare Node',
+    name: 'Compare Models',
     isCodebase: false,
     codebaseType: CODEBASE_TYPES.Git,
     code: "",
@@ -77,7 +77,7 @@ const DEFAULT_VALUES = (): INodeConfig => ({
 })
 
 const NODE_DEFAULT_VALUES = {
-    name: 'Compare Node',
+    name: 'Compare Models',
     id: '',
     // TODO: rectify these values from Or or YAYA
     inputs: [],

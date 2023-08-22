@@ -25,7 +25,7 @@
           "namespace": "model-comparison.compare_models.compare_models"
         },
         "categories": [
-          "data"
+          "automation"
         ]
       }
     ],
@@ -40,7 +40,7 @@
         "initInputs": [],
         "functions": [
           {
-            "name": "compare",
+            "name": "compare_models",
             "displayName": "Compare Models",
             "description": "Compare two models according to input config",
             "input": [
@@ -59,18 +59,12 @@
             ],
             "output": [
               {
-                "name": "model_1",
-                "type": "Model"
-              },
-              {
-                "name": "model_2",
+                "name": "winning_model",
                 "type": "Model"
               }
             ]
           }
-        ],
-        "displayIcon": "compare",
-        "displayName": "Model Compare"
+        ]
       }
     ],
     "services": [

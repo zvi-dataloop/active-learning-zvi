@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host local.dataloop.ai --port 8082",
     "build": "vue-tsc -p tsconfig.json --noEmit --skipLibCheck && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@dataloop-ai/components": "^0.13.7",
     "@dataloop-ai/icons": "^2.0.10",
-    "@dataloop-ai/jssdk": "^0.0.6",
+    "@dataloop-ai/jssdk": "^0.0.44",
     "lodash": "^4.17.21",
     "unplugin-vue-components": "^0.22.7",
     "uuid": "^9.0.0",
