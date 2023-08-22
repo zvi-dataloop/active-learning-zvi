@@ -1,0 +1,37 @@
+iou_th,model_name,label,TP,FP,FN,precision,recall,f1
+0.05,nozzle-model-1,nozzle in tank,1,1,1,1.0,1.0,1.0
+0.05,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.05,nozzle-model-1,all,2,1,0,1.0,1.0,1.0
+0.1,nozzle-model-1,nozzle in tank,1,0,0,1.0,1.0,1.0
+0.1,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.1,nozzle-model-1,all,2,0,0,1.0,1.0,1.0
+0.2,nozzle-model-1,nozzle in tank,1,0,0,1.0,1.0,1.0
+0.2,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.2,nozzle-model-1,all,2,0,0,1.0,1.0,1.0
+0.3,nozzle-model-1,nozzle in tank,1,0,0,1.0,1.0,1.0
+0.3,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.3,nozzle-model-1,all,2,0,0,1.0,1.0,1.0
+0.4,nozzle-model-1,nozzle in tank,1,0,0,1.0,1.0,1.0
+0.4,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.4,nozzle-model-1,all,2,0,0,1.0,1.0,1.0
+0.5,nozzle-model-1,nozzle in tank,1,0,0,1.0,1.0,1.0
+0.5,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.5,nozzle-model-1,all,2,0,0,1.0,1.0,1.0
+0.6,nozzle-model-1,nozzle in tank,1,0,0,1.0,1.0,1.0
+0.6,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.6,nozzle-model-1,all,2,0,0,1.0,1.0,1.0
+0.7,nozzle-model-1,nozzle in tank,1,0,0,1.0,1.0,1.0
+0.7,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.7,nozzle-model-1,all,2,0,0,1.0,1.0,1.0
+0.8,nozzle-model-1,nozzle in tank,1,0,0,1.0,1.0,1.0
+0.8,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.8,nozzle-model-1,all,2,0,0,1.0,1.0,1.0
+0.9,nozzle-model-1,nozzle in tank,0,1,1,0,0,0
+0.9,nozzle-model-1,nozzle outside tank,1,0,0,1.0,1.0,1.0
+0.9,nozzle-model-1,all,1,1,1,0.5,0.5,0.5
+0.95,nozzle-model-1,nozzle in tank,0,1,1,0,0,0
+0.95,nozzle-model-1,nozzle outside tank,0,1,1,0,0,0
+0.95,nozzle-model-1,all,0,2,2,0,0,0
+0.98,nozzle-model-1,nozzle in tank,0,1,1,0,0,0
+0.98,nozzle-model-1,nozzle outside tank,0,1,1,0,0,0
+0.98,nozzle-model-1,all,0,2,2,0,0,0

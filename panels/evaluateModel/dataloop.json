@@ -1,0 +1,107 @@
+{
+    "displayName": "Evaluate Model",
+    "name": "Evaluate Model",
+    "icon": "icon-dl-status-filled",
+    "components": {
+        "panels": [
+            {
+                "name": "pipelineNodePanel",
+                "icon": "icon-dl-status-filled",
+                "supportedSlots": [
+                    {
+                        "type": "pipelineNodeConfig",
+                        "configuration": {}
+                    }
+                ],
+                "conditions": {
+                    "resources": []
+                }
+            }
+        ],
+        "pipelineNodes": [
+            {
+                "invoke": {
+                    "type": "function",
+                    "namespace": "custom_nodes.evaluate_model"
+                },
+                "categories": ["data"]
+            }
+        ],
+        "modules": [
+            {
+                "name": "custom_nodes",
+                "entryPoint": "modules/main.py",
+                "className": "EvaluateNode",
+                "initInputs": [],
+                "functions": [
+                    {
+                        "name": "evaluate_model",
+                        "description": "Model Evaluate custom node",
+                        "input": [
+                            {
+                                "type": "Item",
+                                "name": "item",
+                                "displayName": "dataset",
+                                "io": "input",
+                                "actionIcon": "icon-dl-dataset"
+                            },
+                            {
+                                "type": "Item",
+                                "name": "item",
+                                "displayName": "test set",
+                                "io": "input",
+                                "actionIcon": "icon-dl-json"
+                            },
+                            {
+                                "type": "Model",
+                                "name": "model",
+                                "displayName": "model",
+                                "io": "input",
+                                "actionIcon": "icon-dl-models"
+                            }
+                        ],
+                        "output": [
+                            {
+                                "action": "model_1",
+                                "name": "model",
+                                "type": "Model",
+                                "displayName": "model",
+                                "io": "output",
+                                "actionIcon": "icon-dl-models"
+                            }
+                        ],
+                        "displayIcon": "status-filled",
+                        "displayName": "Model Evaluate"
+                    }
+                ]
+            }
+        ],
+        "services": [{
+            "name": "runner81",
+            "panelNames": [
+              "pipelineNodePanel"
+            ],
+            "moduleName": "custom_nodes",
+            "runtime": {
+                "podType": "regular-xs",
+                "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
+                "numReplicas": 1,
+                "concurrency": 10,
+                "pyPackages": {},
+                "singleAgent": false,
+                "autoscaler": {
+                  "type": "rabbitmq",
+                  "minReplicas": 1,
+                  "maxReplicas": 2,
+                  "queueLength": 10
+                },
+                "preemptible": false,
+                "executionTimeout": 3600,
+                "drainTime": 600,
+                "onReset": "failed",
+                "runExecutionAsProcess": false
+              },
+              "maxAttempts": 3
+          }]
+    }
+}

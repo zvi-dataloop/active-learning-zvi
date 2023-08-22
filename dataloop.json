@@ -1,0 +1,363 @@
+{
+  "displayName": "Active Learning Zvi",
+  "name": "active-learning-zvi",
+  "scope": "global",
+  "version": "1.0.1",
+  "components": {
+    "panels": [
+      {
+        "name": "dataSplit",
+        "icon": "icon-dl-qa-sampling",
+        "supportedSlots": [
+          {
+            "type": "pipelineNodeConfig",
+            "configuration": {}
+          }
+        ],
+        "conditions": {
+          "resources": []
+        }
+      },
+      {
+        "name": "newModel",
+        "icon": "icon-dl-models",
+        "supportedSlots": [
+          {
+            "type": "pipelineNodeConfig",
+            "configuration": {}
+          }
+        ],
+        "conditions": {
+          "resources": []
+        }
+      },
+      {
+        "name": "evaluateModel",
+        "icon": "icon-dl-status-filled",
+        "supportedSlots": [
+          {
+            "type": "pipelineNodeConfig",
+            "configuration": {}
+          }
+        ],
+        "conditions": {
+          "resources": []
+        }
+      },
+      {
+        "name": "compareModels",
+        "icon": "icon-dl-compare",
+        "supportedSlots": [
+          {
+            "type": "pipelineNodeConfig",
+            "configuration": {}
+          }
+        ],
+        "conditions": {
+          "resources": []
+        }
+      }
+    ],
+    "pipelineNodes": [
+      {
+        "panel": "dataSplit",
+        "invoke": {
+          "type": "function",
+          "namespace": "active-learning-nodes.custom_nodes.data_split",
+          "scope": "global"
+        },
+        "categories": [
+          "data"
+        ]
+      },
+      {
+        "panel": "newModel",
+        "invoke": {
+          "type": "function",
+          "namespace": "model-setup.create_new_model.new_model",
+          "scope": "project"
+        },
+        "categories": [
+          "automation"
+        ]
+      },
+      {
+        "panel": "trainModel",
+        "invoke": {
+          "type": "function",
+          "namespace": "active-learning-nodes.custom_nodes.train_model",
+          "scope": "project"
+        },
+        "categories": [
+          "automation"
+        ]
+      },
+      {
+        "panel": "evaluateModel",
+        "invoke": {
+          "type": "function",
+          "namespace": "active-learning-nodes.custom_nodes.evaluate_model",
+          "scope": "global"
+        },
+        "categories": [
+          "automation"
+        ]
+      },
+      {
+        "panel": "compareModels",
+        "invoke": {
+          "type": "function",
+          "namespace": "model-comparison.compare_models.compare_models",
+          "scope": "project"
+        },
+        "categories": [
+          "automation"
+        ]
+      }
+    ],
+    "modules": [
+      {
+        "name": "custom_nodes",
+        "versions": {
+          "dtlpy": "1.77.10"
+        },
+        "entryPoint": "modules/main.py",
+        "className": "ServiceRunner",
+        "initInputs": [],
+        "functions": [
+          {
+            "name": "data_split",
+            "description": "The Data Split node is a powerful data processing tool that allows you to dynamically split your data into multiple groups at runtime. Whether you need to sample items for QA tasks or divide your ground truth into train/test/validation sets, the Data Split node makes it easy.\n \n Simply define your groups, set their distribution, and tag each item with its assigned group using a metadata field. Use the Data Split node at any point in your pipeline to customize your data processing.",
+            "input": [
+              {
+                "type": "Item",
+                "name": "item"
+              }
+            ],
+            "output": [
+              {
+                "type": "Item",
+                "name": "item"
+              }
+            ],
+            "displayIcon": "qa-sampling",
+            "displayName": "Data Split"
+          },
+          {
+            "name": "train_model",
+            "description": "Temporary train model node, for checking the flow",
+            "input": [
+              {
+                "type": "Model",
+                "name": "model"
+              }
+            ],
+            "output": [
+              {
+                "type": "Model",
+                "name": "model"
+              }
+            ],
+            "displayIcon": "node-train",
+            "displayName": "Train model (empty)"
+          },
+          {
+            "name": "evaluate_model",
+            "description": "Evaluate model on test data and create the model metrics",
+            "input": [
+              {
+                "type": "Model",
+                "name": "model"
+              },
+              {
+                "type": "Dataset",
+                "name": "test_dataset"
+              },
+              {
+                "type": "Json",
+                "name": "test_filter"
+              }
+            ],
+            "output": [
+              {
+                "type": "Model",
+                "name": "model"
+              }
+            ],
+            "displayIcon": "status-filled",
+            "displayName": "Evaluate Model"
+          }
+        ]
+      },
+      {
+        "name": "create_new_model",
+        "versions": {
+          "dtlpy": "1.77.10"
+        },
+        "entryPoint": "modules/new_model.py",
+        "className": "ModelCreator",
+        "initInputs": [],
+        "functions": [
+          {
+            "name": "new_model",
+            "description": "Create a new version of the model. Models can be created from pretrained models, or from a custom model. The model will be created in the same project as the input model.",
+            "input": [
+              {
+                "name": "from_model",
+                "type": "Model"
+              },
+              {
+                "name": "dataset",
+                "type": "Dataset"
+              },
+              {
+                "name": "train_subset",
+                "type": "String"
+              },
+              {
+                "name": "validation_subset",
+                "type": "String"
+              },
+              {
+                "name": "model_configuration",
+                "type": "Json"
+              }
+            ],
+            "output": [
+              {
+                "name": "to_model",
+                "type": "Model"
+              }
+            ],
+            "displayIcon": "models",
+            "displayName": "Create New Model"
+          }
+        ]
+      },
+      {
+        "name": "compare_models",
+        "versions": {
+          "dtlpy": "1.77.10"
+        },
+        "entryPoint": "modules/model_compare.py",
+        "className": "Comparator",
+        "initInputs": [],
+        "functions": [
+          {
+            "name": "compare_models",
+            "displayName": "Compare Models",
+            "description": "Compare two models according to input config",
+            "input": [
+              {
+                "name": "model_1",
+                "type": "Model"
+              },
+              {
+                "name": "model_2",
+                "type": "Model"
+              },
+              {
+                "name": "comparison_subset",
+                "type": "Json"
+              }
+            ],
+            "output": [
+              {
+                "name": "model_1",
+                "type": "Model"
+              },
+              {
+                "name": "model_2",
+                "type": "Model"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "services": [
+      {
+        "name": "active-learning-nodes",
+        "panelNames": [
+          "dataSplit",
+          "evaluateModel"
+        ],
+        "moduleName": "custom_nodes",
+        "runtime": {
+          "podType": "regular-xs",
+          "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
+          "numReplicas": 1,
+          "concurrency": 10,
+          "pyPackages": {},
+          "singleAgent": false,
+          "autoscaler": {
+            "type": "rabbitmq",
+            "minReplicas": 1,
+            "maxReplicas": 2,
+            "queueLength": 10
+          },
+          "preemptible": false,
+          "executionTimeout": 3600,
+          "drainTime": 600,
+          "onReset": "failed",
+          "runExecutionAsProcess": false
+        },
+        "maxAttempts": 3
+      },
+      {
+        "name": "model-setup",
+        "panelNames": [
+          "newModel"
+        ],
+        "moduleName": "create_new_model",
+        "runtime": {
+          "podType": "regular-xs",
+          "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
+          "numReplicas": 1,
+          "concurrency": 10,
+          "pyPackages": {},
+          "singleAgent": false,
+          "autoscaler": {
+            "type": "rabbitmq",
+            "minReplicas": 1,
+            "maxReplicas": 2,
+            "queueLength": 10
+          },
+          "preemptible": false,
+          "executionTimeout": 3600,
+          "drainTime": 600,
+          "onReset": "failed",
+          "runExecutionAsProcess": false
+        },
+        "maxAttempts": 3
+      },
+      {
+        "name": "model-comparison",
+        "panelNames": [
+          "compareModels"
+        ],
+        "moduleName": "compare_models",
+        "runtime": {
+          "podType": "regular-xs",
+          "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
+          "numReplicas": 1,
+          "concurrency": 10,
+          "pyPackages": {},
+          "singleAgent": false,
+          "autoscaler": {
+            "type": "rabbitmq",
+            "minReplicas": 1,
+            "maxReplicas": 2,
+            "queueLength": 10
+          },
+          "preemptible": false,
+          "executionTimeout": 3600,
+          "drainTime": 600,
+          "onReset": "failed",
+          "runExecutionAsProcess": false
+        },
+        "maxAttempts": 3
+      }
+    ]
+  }
+}
