@@ -2,7 +2,7 @@
   "displayName": "Active Learning Zvi",
   "name": "active-learning-zvi",
   "scope": "global",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "codebase": {
     "type": "git",
     "gitUrl": "https://github.com/zvi-dataloop/active-learning-zvi",
@@ -288,6 +288,9 @@
           "evaluateModel"
         ],
         "moduleName": "custom_nodes",
+        "versions": {
+          "dtlpy": "1.83.5"
+        },
         "runtime": {
           "podType": "regular-xs",
           "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
@@ -315,6 +318,9 @@
           "newModel"
         ],
         "moduleName": "create_new_model",
+        "versions": {
+          "dtlpy": "1.83.5"
+        },
         "runtime": {
           "podType": "regular-xs",
           "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
@@ -342,6 +348,9 @@
           "compareModels"
         ],
         "moduleName": "compare_models",
+        "versions": {
+          "dtlpy": "1.83.5"
+        },
         "runtime": {
           "podType": "regular-xs",
           "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/node14:latest",
