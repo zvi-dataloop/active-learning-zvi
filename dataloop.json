@@ -5,7 +5,7 @@
   "version": "1.0.2",
   "codebase": {
     "type": "git",
-    "gitUrl": "https://github.com/dataloop-ai/notification-email-channel",
+    "gitUrl": "https://github.com/zvi-dataloop/active-learning-zvi",
     "gitTag": "main"
   },
   "components": {
