@@ -2,7 +2,7 @@
   "displayName": "Active Learning Zvi",
   "name": "active-learning-zvi",
   "scope": "global",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "codebase": {
     "type": "git",
     "gitUrl": "https://github.com/zvi-dataloop/active-learning-zvi",
@@ -284,6 +284,7 @@
       {
         "name": "data-split",
         "moduleName": "custom_nodes",
+        "botUserName": "pipelines@dataloop.ai",
         "versions": {
           "dtlpy": "1.83.5"
         },
@@ -308,6 +309,7 @@
         "maxAttempts": 3
       },
       {
+        "botUserName": "pipelines@dataloop.ai",
         "name": "active-learning-nodes",
         "panelNames": [
           "dataSplit",
@@ -339,6 +341,7 @@
         "maxAttempts": 3
       },
       {
+        "botUserName": "pipelines@dataloop.ai",
         "name": "model-setup",
         "panelNames": [
           "newModel"
@@ -369,6 +372,7 @@
         "maxAttempts": 3
       },
       {
+        "botUserName": "pipelines@dataloop.ai",
         "name": "model-comparison",
         "panelNames": [
           "compareModels"
